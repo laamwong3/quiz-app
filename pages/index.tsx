@@ -14,15 +14,11 @@ import { categories, difficulties } from "../constants";
 import { ChangeEvent, useState } from "react";
 import { useNotification } from "../contexts/NotificationContext";
 import { useRouter } from "next/router";
-
-interface Input {
-  player: string;
-  category: number;
-  difficulty: "easy" | "medium" | "hard";
-}
+import { useInput } from "../contexts/InputContext";
 
 const Home: NextPage = () => {
-  const [input, setInput] = useState({} as Input);
+  const { input, setInput } = useInput();
+
   const { setNotification } = useNotification();
   const router = useRouter();
 
@@ -37,12 +33,8 @@ const Home: NextPage = () => {
   };
 
   const handleClick = () => {
-    const { category, difficulty, player } = input;
-    if (
-      player !== undefined &&
-      category !== undefined &&
-      difficulty !== undefined
-    ) {
+    const { player } = input;
+    if (player !== undefined && player.trim() !== "") {
       router.push("/quiz");
     } else {
       setNotification({
@@ -52,6 +44,8 @@ const Home: NextPage = () => {
       });
     }
   };
+
+  // console.log(input);
   return (
     <>
       <Stack

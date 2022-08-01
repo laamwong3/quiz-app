@@ -1,5 +1,6 @@
 import { Children } from "react";
 import { Notification } from "../components";
+import InputContext from "./InputContext";
 import NotificationContext from "./NotificationContext";
 
 interface StateManageProps {
@@ -9,10 +10,12 @@ interface StateManageProps {
 const StateManager = ({ children }: StateManageProps) => {
   return (
     <>
-      <NotificationContext>
-        <Notification />
-        {children}
-      </NotificationContext>
+      <InputContext>
+        <NotificationContext>
+          <Notification />
+          {children}
+        </NotificationContext>
+      </InputContext>
     </>
   );
 };
