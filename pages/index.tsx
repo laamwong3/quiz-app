@@ -35,7 +35,7 @@ const Home: NextPage = () => {
   const handleClick = () => {
     const { player } = input;
     if (player !== undefined && player.trim() !== "") {
-      router.push("/quiz");
+      router.replace("/quiz");
     } else {
       setNotification({
         open: true,
