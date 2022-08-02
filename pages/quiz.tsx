@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import { useInput } from "../contexts/InputContext";
+import { useNotification } from "../contexts/NotificationContext";
 import { Questions } from "./api/questions";
 
 interface Choice {
@@ -21,10 +22,11 @@ const Quiz: NextPage = () => {
   const [currentScore, setCurrentScore] = useState(0);
   const [selected, setSelected] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
+  const { setNotification } = useNotification();
 
   const { input, setInput } = useInput();
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data: questions } = useSWR<Questions>(
+  const { data: questions } = useSWRImmutable<Questions>(
     () =>
       input
         ? `https://opentdb.com/api.php?amount=10&category=${input.category}&difficulty=${input.difficulty}&type=multiple`
@@ -32,15 +34,29 @@ const Quiz: NextPage = () => {
     fetcher
   );
 
-  // const handleAnswerSelected = (selectedAnswer: string) => {
-  //   if (questionSet && questionSet.results) {
-  //     if (
-  //       selectedAnswer ===
-  //       questionSet?.results[currentQuestion - 1].correct_answer
-  //     ) {
-  //     }
-  //   }
-  // };
+  const handleNextQuestion = () => {
+    if (!selected) {
+      setNotification({
+        open: true,
+        type: "error",
+        message: "Please select a answer",
+      });
+      return;
+    }
+    // if (
+    //   choices &&
+    //   selectedAnswer === choices[currentQuestion - 1].correctAnswer
+    // ) {
+    //   setCurrentScore((prevState) => prevState + 1);
+    // }
+    if (currentQuestion === 10) {
+      router.replace(`/result?score=${currentScore}`);
+    } else {
+      setCurrentQuestion((prevState) => prevState + 1);
+      setSelected(false);
+      setSelectedAnswer("");
+    }
+  };
 
   console.log(questions);
   console.log(choices);
@@ -74,7 +90,7 @@ const Quiz: NextPage = () => {
       }
       setChoices(tempArr);
     }
-  }, []);
+  }, [questions]);
 
   return (
     <>
@@ -135,6 +151,12 @@ const Quiz: NextPage = () => {
                         ? () => {
                             setSelected(true);
                             setSelectedAnswer(option);
+                            if (
+                              option ===
+                              choices[currentQuestion - 1].correctAnswer
+                            ) {
+                              setCurrentScore((prevState) => prevState + 1);
+                            }
                           }
                         : () => {}
                     }
@@ -154,7 +176,11 @@ const Quiz: NextPage = () => {
             >
               QUIT
             </Button>
-            <Button variant="contained" color="secondary" onClick={() => {}}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleNextQuestion}
+            >
               NEXT QUESTION
             </Button>
           </Stack>
