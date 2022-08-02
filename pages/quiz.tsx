@@ -25,6 +25,9 @@ const Quiz: NextPage = () => {
         : null,
     fetcher
   );
+  // if (choices && choices[currentQuestion - 1].selectOptions)
+  //   console.log(choices[currentQuestion - 1].selectOptions);
+
   console.log(choices);
 
   useEffect(() => {
